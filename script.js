@@ -1,271 +1,163 @@
 // =====================
-// 要素を取得
+// 要素取得
 // =====================
 
-// 画面
-const memberScreen = document.getElementById('member-screen');
-const gameScreen = document.getElementById('game-screen');
+const memberScreen =
+  document.getElementById('member-screen');
 
-// メンバー登録
-const memberNameInput = document.getElementById('member-name');
-const addMemberButton = document.getElementById('add-member-button');
-const memberList = document.getElementById('member-list');
-const memberNextButton = document.getElementById('member-next-button');
+const gameScreen =
+  document.getElementById('game-screen');
 
-// メンバー編集に戻るボタン
-const backToMemberButton = document.getElementById(
-  'back-to-member-button'
-);
+const memberNameInput =
+  document.getElementById('member-name');
 
-// 回答者の選択
-const memberModeInputs = document.querySelectorAll(
-  'input[name="member-mode"]'
-);
+const addMemberButton =
+  document.getElementById('add-member-button');
 
-const memberSelect = document.getElementById(
-  'member-select'
-);
+const memberList =
+  document.getElementById('member-list');
 
-// ゲーム画面
-const dice = document.getElementById('dice');
-const rollButton = document.getElementById('roll-button');
+const memberNextButton =
+  document.getElementById('member-next-button');
 
-const genreResult = document.getElementById('genre-result');
-const memberResult = document.getElementById('member-result');
-const topicResult = document.getElementById('topic-result');
+const memberSelect =
+  document.getElementById('member-select');
 
-// ゲーム操作ボタン
-const deepButton = document.getElementById('deep-button');
-const favoriteButton = document.getElementById(
-  'favorite-button'
-);
-const nextTopicButton = document.getElementById(
-  'next-topic-button'
-);
+const rollButton =
+  document.getElementById('roll-button');
+
+const dice =
+  document.getElementById('dice');
+
+const genreResult =
+  document.getElementById('genre-result');
+
+const memberResult =
+  document.getElementById('member-result');
+
+const topicResult =
+  document.getElementById('topic-result');
+
+const nextTopicButton =
+  document.getElementById('next-topic-button');
+
+const backToMemberButton =
+  document.getElementById('back-to-member-button');
 
 
 // =====================
-// データ
+// 特殊要素
 // =====================
 
-// 登録されたメンバー
+const missionBlock =
+  document.getElementById('mission-block');
+
+const missionResult =
+  document.getElementById('mission-result');
+
+const eventBlock =
+  document.getElementById('event-block');
+
+const eventResult =
+  document.getElementById('event-result');
+
+const specialModeBlock =
+  document.getElementById('special-mode-block');
+
+const specialModeResult =
+  document.getElementById('special-mode-result');
+
+
+// =====================
+// メンバー情報
+// =====================
+
 const members = [];
 
-// 今回選択されたジャンル
-let selectedGenres = [];
 
-// 今回選ばれたジャンル
+// =====================
+// 現在の話題情報
+// =====================
+
 let currentGenre = '';
-
-// 今回選ばれた回答者
+let currentTopic = '';
 let currentMember = '';
 
-// 今回選ばれた話題
-let currentTopic = null;
 
-// 使用済みの話題
-const usedTopics = [];
+// =====================
+// JSONデータ
+// =====================
 
-// 盛り上がった話題
-const favoriteTopics = [];
+let gameData = null;
 
 
 // =====================
-// ジャンルごとの話題
+// ジャンルごとのサイコロ
 // =====================
 
-const topics = {
+const diceStyles = {
 
-  '😂 面白い': [
+  '😂 面白い': '😂',
 
-    {
-      question:
-        '今までで一番意味がわからなかった出来事は？',
+  '❤️ 恋愛': '❤️',
 
-      deep:
-        'そのとき周りの人はどんな反応だった？'
-    },
+  '💀 黒歴史': '💀',
 
-    {
-      question:
-        '人生で一番恥ずかしかった失敗は？',
+  '🤔 深い話': '🤔',
 
-      deep:
-        '今思い出しても恥ずかしいポイントはどこ？'
-    },
+  '🔥 暴露': '🔥',
 
-    {
-      question:
-        '最近一番笑ったことは？',
-
-      deep:
-        'なんでそんなに面白かったと思う？'
-    }
-
-  ],
-
-
-  '❤️ 恋愛': [
-
-    {
-      question:
-        '今までで一番キュンとした瞬間は？',
-
-      deep:
-        'その人のどんなところに惹かれた？'
-    },
-
-    {
-      question:
-        '好きな人ができたら態度に出る？',
-
-      deep:
-        '周りの人にはすぐバレるタイプ？'
-    },
-
-    {
-      question:
-        '理想のデートは？',
-
-      deep:
-        '相手にはどんなことをしてほしい？'
-    }
-
-  ],
-
-
-  '💀 黒歴史': [
-
-    {
-      question:
-        '今だから言える黒歴史は？',
-
-      deep:
-        'もし当時の自分に会えたら何て言う？'
-    },
-
-    {
-      question:
-        '学生時代に一番恥ずかしかったことは？',
-
-      deep:
-        'その場から逃げたくなった？'
-    },
-
-    {
-      question:
-        '過去に戻れるなら消したい出来事は？',
-
-      deep:
-        'その出来事から学んだことはある？'
-    }
-
-  ],
-
-
-  '🤔 深い話': [
-
-    {
-      question:
-        '人生で一番大切にしていることは？',
-
-      deep:
-        'それを大切にするようになったきっかけは？'
-    },
-
-    {
-      question:
-        '10年前の自分に何を伝えたい？',
-
-      deep:
-        '逆に10年前の自分から学べそうなことは？'
-    },
-
-    {
-      question:
-        '自分の人生を変えた出来事は？',
-
-      deep:
-        'もしその出来事がなかったら今どうなっていたと思う？'
-    }
-
-  ],
-
-
-  '🔥 暴露': [
-
-    {
-      question:
-        'この中で第一印象と一番違った人は？',
-
-      deep:
-        '最初はどんな印象だった？'
-    },
-
-    {
-      question:
-        '今まで誰にも言っていなかった秘密は？',
-
-      deep:
-        'なぜ今まで誰にも言わなかった？'
-    },
-
-    {
-      question:
-        '実は最近気になっていることは？',
-
-      deep:
-        'それについて誰かに相談したことはある？'
-    }
-
-  ],
-
-
-  '⚔️ 究極の選択': [
-
-    {
-      question:
-        '一生スマホなしと一生恋愛なし、どっちを選ぶ？',
-
-      deep:
-        '選ばなかった方を失ったら一番困ることは？'
-    },
-
-    {
-      question:
-        '100万円もらえるけど友達全員に秘密を1つ知られる。やる？',
-
-      deep:
-        'その秘密を知られたら一番困る相手は誰？'
-    },
-
-    {
-      question:
-        '過去に戻るか、未来を見るか？',
-
-      deep:
-        '実際に何を知りたい？'
-    }
-
-  ]
+  '⚔️ 究極の選択': '⚔️'
 
 };
 
 
 // =====================
-// 画面を切り替える関数
+// data.jsonを読み込む
 // =====================
 
-function showScreen(screen) {
+async function loadGameData() {
 
-  // すべての画面を非表示
-  memberScreen.classList.add('hidden');
+  try {
 
-  gameScreen.classList.add('hidden');
+    const response =
+      await fetch('./data.json');
 
 
-  // 指定された画面だけ表示
-  screen.classList.remove('hidden');
+    if (!response.ok) {
+
+      throw new Error(
+        'data.jsonの読み込みに失敗しました'
+      );
+
+    }
+
+
+    gameData =
+      await response.json();
+
+
+    console.log(
+      'data.jsonの読み込みに成功しました'
+    );
+
+
+    rollButton.disabled = false;
+
+  } catch (error) {
+
+    console.error(error);
+
+
+    alert(
+      'ゲームデータの読み込みに失敗しました。\n' +
+      'data.jsonが同じフォルダにあるか確認してください。'
+    );
+
+
+    rollButton.disabled = true;
+
+  }
 
 }
 
@@ -276,273 +168,303 @@ function showScreen(screen) {
 
 function addMember() {
 
-  // 入力された名前を取得
   const name =
     memberNameInput.value.trim();
 
 
-  // 名前が空の場合
   if (name === '') {
 
-    alert('名前を入力してください');
+    memberNameInput.focus();
 
     return;
+
   }
 
 
-  // 同じ名前がすでにある場合
   if (members.includes(name)) {
 
-    alert('同じ名前はすでに登録されています');
+    alert(
+      '同じ名前がすでに登録されています'
+    );
 
     return;
+
   }
 
 
-  // メンバー配列に追加
   members.push(name);
 
 
-  // 入力欄を空にする
   memberNameInput.value = '';
 
 
-  // メンバー一覧を更新
   renderMembers();
 
 
-  // プルダウンも更新
-  updateMemberSelect();
-
-
-  // 入力欄にカーソルを戻す
   memberNameInput.focus();
 
 }
 
 
 // =====================
-// メンバー一覧を表示
+// メンバー一覧表示
 // =====================
 
 function renderMembers() {
 
-  // 一度中身を空にする
   memberList.innerHTML = '';
 
 
-  // メンバーを1人ずつ表示
-  members.forEach((member, index) => {
+  memberSelect.innerHTML =
+    '<option value="">回答者を選択してください</option>';
 
-    // メンバーの要素を作成
-    const memberItem =
-      document.createElement('div');
 
-    memberItem.classList.add(
-      'member-item'
+  members.forEach(
+    (member, index) => {
+
+      // =====================
+      // メンバー表示
+      // =====================
+
+      const memberItem =
+        document.createElement('div');
+
+
+      memberItem.classList.add(
+        'member-item'
+      );
+
+
+      const nameElement =
+        document.createElement('span');
+
+
+      nameElement.textContent =
+        member;
+
+
+      // =====================
+      // 削除ボタン
+      // =====================
+
+      const deleteButton =
+        document.createElement('button');
+
+
+      deleteButton.textContent =
+        '削除';
+
+
+      deleteButton.classList.add(
+        'delete-member-button'
+      );
+
+
+      deleteButton.addEventListener(
+        'click',
+        () => {
+
+          members.splice(
+            index,
+            1
+          );
+
+
+          renderMembers();
+
+        }
+      );
+
+
+      memberItem.appendChild(
+        nameElement
+      );
+
+
+      memberItem.appendChild(
+        deleteButton
+      );
+
+
+      memberList.appendChild(
+        memberItem
+      );
+
+
+      // =====================
+      // 回答者選択
+      // =====================
+
+      const option =
+        document.createElement('option');
+
+
+      option.value =
+        member;
+
+
+      option.textContent =
+        member;
+
+
+      memberSelect.appendChild(
+        option
+      );
+
+    }
+  );
+
+}
+
+
+// =====================
+// Enterキーでメンバー追加
+// =====================
+
+memberNameInput.addEventListener(
+  'keydown',
+  (event) => {
+
+    if (event.key === 'Enter') {
+
+      addMember();
+
+    }
+
+  }
+);
+
+
+// =====================
+// 追加ボタン
+// =====================
+
+addMemberButton.addEventListener(
+  'click',
+  addMember
+);
+
+
+// =====================
+// ゲーム開始
+// =====================
+
+memberNextButton.addEventListener(
+  'click',
+  () => {
+
+    if (members.length === 0) {
+
+      alert(
+        '参加メンバーを1人以上追加してください'
+      );
+
+      return;
+
+    }
+
+
+    if (gameData === null) {
+
+      alert(
+        'ゲームデータを読み込んでいます。\n少し待ってからもう一度押してください。'
+      );
+
+      return;
+
+    }
+
+
+    memberScreen.classList.add(
+      'hidden'
     );
 
 
-    // 名前
-    const memberName =
-      document.createElement('span');
+    gameScreen.classList.remove(
+      'hidden'
+    );
 
-    memberName.textContent =
-      `👤 ${member}`;
+  }
+);
 
 
-    // 削除ボタン
-    const deleteButton =
-      document.createElement('button');
+// =====================
+// メンバー編集に戻る
+// =====================
 
-    deleteButton.textContent = '×';
+backToMemberButton.addEventListener(
+  'click',
+  () => {
 
-    deleteButton.classList.add(
-      'delete-member-button'
+    gameScreen.classList.add(
+      'hidden'
     );
 
 
-    // 削除ボタンが押された場合
-    deleteButton.addEventListener(
-      'click',
+    memberScreen.classList.remove(
+      'hidden'
+    );
+
+  }
+);
+
+
+// =====================
+// 回答者モード切り替え
+// =====================
+
+const memberModes =
+  document.querySelectorAll(
+    'input[name="member-mode"]'
+  );
+
+
+memberModes.forEach(
+  (mode) => {
+
+    mode.addEventListener(
+      'change',
       () => {
 
-        // 配列から削除
-        members.splice(index, 1);
+        if (mode.value === 'select') {
 
+          memberSelect.disabled =
+            false;
 
-        // 再表示
-        renderMembers();
+        } else {
 
+          memberSelect.disabled =
+            true;
 
-        // プルダウンを更新
-        updateMemberSelect();
+        }
 
       }
     );
 
-
-    // 名前を追加
-    memberItem.appendChild(
-      memberName
-    );
-
-
-    // 削除ボタンを追加
-    memberItem.appendChild(
-      deleteButton
-    );
-
-
-    // メンバー一覧に追加
-    memberList.appendChild(
-      memberItem
-    );
-
-  });
-
-}
+  }
+);
 
 
 // =====================
-// 回答者選択プルダウンを更新
+// ランダムな要素を取得
 // =====================
 
-function updateMemberSelect() {
+function getRandomItem(array) {
 
-  // 中身を一度空にする
-  memberSelect.innerHTML = '';
+  if (!array || array.length === 0) {
 
+    return '';
 
-  // 最初の選択肢
-  const defaultOption =
-    document.createElement('option');
-
-  defaultOption.value = '';
-
-  defaultOption.textContent =
-    '回答者を選択してください';
-
-  memberSelect.appendChild(
-    defaultOption
-  );
-
-
-  // 登録メンバーを追加
-  members.forEach((member) => {
-
-    const option =
-      document.createElement('option');
-
-    option.value = member;
-
-    option.textContent =
-      `👤 ${member}`;
-
-    memberSelect.appendChild(
-      option
-    );
-
-  });
-
-}
-
-
-// =====================
-// メンバー登録画面 → ゲーム画面
-// =====================
-
-function startGame() {
-
-  // メンバーがいない場合
-  if (members.length === 0) {
-
-    alert(
-      '参加メンバーを1人以上追加してください'
-    );
-
-    return;
   }
 
 
-  // ゲーム画面を表示
-  showScreen(gameScreen);
-
-
-  // 結果を初期化
-  genreResult.textContent = '？';
-
-  memberResult.textContent = '？';
-
-  topicResult.textContent =
-    '🎲 サイコロを振ってスタート！';
-
-
-  // 現在のデータを初期化
-  currentGenre = '';
-
-  currentMember = '';
-
-  currentTopic = null;
-
-
-  // お気に入りボタンを元に戻す
-  favoriteButton.textContent =
-    '⭐ 盛り上がった！';
-
-}
-
-
-// =====================
-// ゲーム画面 → メンバー登録画面
-// =====================
-
-function goToMemberScreen() {
-
-  showScreen(memberScreen);
-
-}
-
-
-// =====================
-// 回答者の決め方を取得
-// =====================
-
-function getMemberMode() {
-
-  const checkedMode =
-    document.querySelector(
-      'input[name="member-mode"]:checked'
+  const randomIndex =
+    Math.floor(
+      Math.random() * array.length
     );
 
-  return checkedMode.value;
 
-}
-
-
-// =====================
-// 回答者選択モード変更
-// =====================
-
-function changeMemberMode() {
-
-  const mode =
-    getMemberMode();
-
-
-  // 自分で選ぶ場合
-  if (mode === 'select') {
-
-    memberSelect.disabled = false;
-
-  } else {
-
-    // ランダムの場合
-    memberSelect.disabled = true;
-
-    memberSelect.value = '';
-
-  }
+  return array[randomIndex];
 
 }
 
@@ -559,28 +481,18 @@ function getSelectedGenres() {
     );
 
 
-  // ジャンルが選ばれていない場合
-  if (checkedGenres.length === 0) {
-
-    alert(
-      'ジャンルを1つ以上選んでください'
-    );
-
-    return null;
-  }
-
-
-  // 選択されたジャンルを配列にする
   const genres = [];
 
 
-  checkedGenres.forEach((genre) => {
+  checkedGenres.forEach(
+    (genre) => {
 
-    genres.push(
-      genre.value
-    );
+      genres.push(
+        genre.value
+      );
 
-  });
+    }
+  );
 
 
   return genres;
@@ -589,17 +501,210 @@ function getSelectedGenres() {
 
 
 // =====================
-// ランダムな要素を取得
+// 回答者を決定
 // =====================
 
-function getRandomItem(array) {
+function getSelectedMember() {
 
-  const randomIndex =
-    Math.floor(
-      Math.random() * array.length
+  const selectedMode =
+    document.querySelector(
+      'input[name="member-mode"]:checked'
+    ).value;
+
+
+  // =====================
+  // 自分で選ぶ
+  // =====================
+
+  if (selectedMode === 'select') {
+
+    if (memberSelect.value === '') {
+
+      return null;
+
+    }
+
+
+    return memberSelect.value;
+
+  }
+
+
+  // =====================
+  // ランダム
+  // =====================
+
+  return getRandomItem(
+    members
+  );
+
+}
+
+
+// =====================
+// 特殊要素をすべて非表示
+// =====================
+
+function hideSpecialBlocks() {
+
+  missionBlock.classList.add(
+    'hidden'
+  );
+
+
+  eventBlock.classList.add(
+    'hidden'
+  );
+
+
+  specialModeBlock.classList.add(
+    'hidden'
+  );
+
+}
+
+
+// =====================
+// 特殊モード判定
+// =====================
+//
+// 通常       約75%
+// ミッション 約10%
+// イベント   約10%
+// スペシャル 約5%
+//
+// 合計100%
+// =====================
+
+function getRandomMode() {
+
+  const random =
+    Math.random();
+
+
+  // =====================
+  // 約75%：通常
+  // =====================
+
+  if (random < 0.75) {
+
+    return 'normal';
+
+  }
+
+
+  // =====================
+  // 約10%：ミッション
+  // =====================
+
+  if (random < 0.85) {
+
+    return 'mission';
+
+  }
+
+
+  // =====================
+  // 約10%：特殊イベント
+  // =====================
+
+  if (random < 0.95) {
+
+    return 'event';
+
+  }
+
+
+  // =====================
+  // 約5%：スペシャル
+  // =====================
+
+  return 'special';
+
+}
+
+
+// =====================
+// 特殊要素を表示
+// =====================
+
+function showSpecialMode(mode) {
+
+  // =====================
+  // ミッション
+  // =====================
+
+  if (mode === 'mission') {
+
+    const mission =
+      getRandomItem(
+        gameData.missions
+      );
+
+
+    missionResult.textContent =
+      mission;
+
+
+    missionBlock.classList.remove(
+      'hidden'
     );
 
-  return array[randomIndex];
+  }
+
+
+  // =====================
+  // 特殊イベント
+  // =====================
+
+  if (mode === 'event') {
+
+    const event =
+      getRandomItem(
+        gameData.specialEvents
+      );
+
+
+    eventResult.innerHTML =
+      `
+      ${event.title}
+      <br>
+      ${event.description}
+      `;
+
+
+    eventBlock.classList.remove(
+      'hidden'
+    );
+
+  }
+
+
+  // =====================
+  // スペシャルモード
+  // =====================
+
+  if (mode === 'special') {
+
+    const special =
+      getRandomItem(
+        gameData.specialModes
+      );
+
+
+    specialModeResult.innerHTML =
+      `
+      ${special.title}
+      <br>
+      ${special.description}
+      `;
+
+
+    specialModeBlock.classList.remove(
+      'hidden'
+    );
+
+  }
 
 }
 
@@ -610,271 +715,271 @@ function getRandomItem(array) {
 
 function rollDice() {
 
-  // 選択されているジャンルを取得
-  selectedGenres =
-    getSelectedGenres();
+  // =====================
+  // JSON読み込み確認
+  // =====================
 
+  if (gameData === null) {
 
-  // ジャンルが選択されていない場合
-  if (selectedGenres === null) {
+    alert(
+      'ゲームデータを読み込んでいます。\n少し待ってください。'
+    );
 
     return;
+
   }
 
 
-  // 回答者の決め方を取得
-  const memberMode =
-    getMemberMode();
+  // =====================
+  // ジャンル確認
+  // =====================
+
+  const genres =
+    getSelectedGenres();
 
 
-  // 自分で選ぶモードの場合
-  if (
-    memberMode === 'select' &&
-    memberSelect.value === ''
-  ) {
+  if (genres.length === 0) {
+
+    alert(
+      'ジャンルを1つ以上選択してください'
+    );
+
+    return;
+
+  }
+
+
+  // =====================
+  // 回答者確認
+  // =====================
+
+  const selectedMember =
+    getSelectedMember();
+
+
+  if (selectedMember === null) {
 
     alert(
       '回答者を選択してください'
     );
 
     return;
+
   }
 
 
-  // 自分で選んだ回答者
-  const selectedMember =
-    memberSelect.value;
-
-
+  // =====================
   // ボタン連打防止
-  rollButton.disabled = true;
+  // =====================
+
+  rollButton.disabled =
+    true;
 
 
-  // 他の操作ボタンも一時的に無効
-  deepButton.disabled = true;
-
-  favoriteButton.disabled = true;
-
-  nextTopicButton.disabled = true;
+  nextTopicButton.disabled =
+    true;
 
 
-  // 前の話題を初期化
-  currentTopic = null;
+  // =====================
+  // 前回の特殊表示を消す
+  // =====================
+
+  hideSpecialBlocks();
 
 
-  // お気に入りボタンを元に戻す
-  favoriteButton.textContent =
-    '⭐ 盛り上がった！';
+  // =====================
+  // 表示を初期化
+  // =====================
+
+  genreResult.textContent =
+    '🎲';
 
 
-  // サイコロを回転
-  dice.classList.add('rolling');
+  memberResult.textContent =
+    '🎲';
 
 
-  // 結果を高速で切り替える
+  topicResult.textContent =
+    'サイコロを振っています...';
+
+
+  // =====================
+  // サイコロ初期化
+  // =====================
+
+  dice.textContent =
+    '🎲';
+
+
+  dice.classList.remove(
+    'rolling'
+  );
+
+
+  // アニメーションを強制的に再スタート
+
+  void dice.offsetWidth;
+
+
+  dice.classList.add(
+    'rolling'
+  );
+
+
+  // =====================
+  // アニメーション中
+  // =====================
+
   const intervalId =
-    setInterval(() => {
+    setInterval(
+      () => {
 
-      // ジャンルをランダム表示
-      genreResult.textContent =
-        getRandomItem(selectedGenres);
+        const randomGenre =
+          getRandomItem(
+            genres
+          );
 
 
-      // 回答者がランダムの場合
-      if (memberMode === 'random') {
+        genreResult.textContent =
+          randomGenre;
+
 
         memberResult.textContent =
-          `👤 ${getRandomItem(members)}`;
-
-      } else {
-
-        // 自分で選択した場合
-        memberResult.textContent =
-          `👤 ${selectedMember}`;
-
-      }
-
-    }, 100);
+          getRandomItem(
+            members
+          );
 
 
-  // 1秒後に結果を決定
-  setTimeout(() => {
+        dice.textContent =
+          diceStyles[randomGenre];
 
-    // ランダム表示を停止
-    clearInterval(intervalId);
-
-
-    // ジャンルを決定
-    currentGenre =
-      getRandomItem(selectedGenres);
+      },
+      100
+    );
 
 
-    // 回答者を決定
-    if (memberMode === 'random') {
+  // =====================
+  // 1秒後に結果決定
+  // =====================
 
-      currentMember =
-        getRandomItem(members);
+  setTimeout(
+    () => {
 
-    } else {
+      clearInterval(
+        intervalId
+      );
+
+
+      // =====================
+      // 最終ジャンル
+      // =====================
+
+      currentGenre =
+        getRandomItem(
+          genres
+        );
+
+
+      // =====================
+      // 最終回答者
+      // =====================
 
       currentMember =
         selectedMember;
 
-    }
+
+      // =====================
+      // お題取得
+      // =====================
+
+      const genreTopics =
+        gameData.topics[
+          currentGenre
+        ];
 
 
-    // 最終結果を表示
-    genreResult.textContent =
-      currentGenre;
+      if (
+        !genreTopics ||
+        genreTopics.length === 0
+      ) {
 
-    memberResult.textContent =
-      `👤 ${currentMember}`;
+        currentTopic =
+          'このジャンルのお題がありません。';
 
+      } else {
 
-    // 話題を決定
-    selectTopic();
+        currentTopic =
+          getRandomItem(
+            genreTopics
+          );
 
-
-    // サイコロ停止
-    dice.classList.remove('rolling');
-
-
-    // ボタンを有効化
-    rollButton.disabled = false;
-
-    deepButton.disabled = false;
-
-    favoriteButton.disabled = false;
-
-    nextTopicButton.disabled = false;
-
-  }, 1000);
-
-}
+      }
 
 
-// =====================
-// 話題を選ぶ
-// =====================
+      // =====================
+      // 結果表示
+      // =====================
 
-function selectTopic() {
-
-  // 選ばれたジャンルの話題一覧
-  const genreTopics =
-    topics[currentGenre];
+      genreResult.textContent =
+        currentGenre;
 
 
-  // まだ使われていない話題だけ取得
-  let availableTopics =
-    genreTopics.filter((topic) => {
+      memberResult.textContent =
+        currentMember;
 
-      return !usedTopics.includes(
-        topic.question
+
+      topicResult.textContent =
+        currentTopic;
+
+
+      // =====================
+      // ジャンル別サイコロ
+      // =====================
+
+      dice.textContent =
+        diceStyles[currentGenre];
+
+
+      // =====================
+      // 特殊要素判定
+      // =====================
+
+      const mode =
+        getRandomMode();
+
+
+      // =====================
+      // 特殊要素表示
+      // =====================
+
+      showSpecialMode(
+        mode
       );
 
-    });
+
+      // =====================
+      // アニメーション終了
+      // =====================
+
+      dice.classList.remove(
+        'rolling'
+      );
 
 
-  // 全部使い切った場合
-  if (availableTopics.length === 0) {
+      // =====================
+      // ボタン復活
+      // =====================
 
-    // 使用済み履歴をリセット
-    usedTopics.length = 0;
-
-
-    // もう一度すべて使用可能にする
-    availableTopics =
-      [...genreTopics];
-
-  }
+      rollButton.disabled =
+        false;
 
 
-  // ランダムで話題を選択
-  const selectedTopic =
-    getRandomItem(
-      availableTopics
-    );
+      nextTopicButton.disabled =
+        false;
 
-
-  // 現在の話題として保存
-  currentTopic =
-    selectedTopic;
-
-
-  // 使用済みに追加
-  usedTopics.push(
-    selectedTopic.question
+    },
+    1000
   );
-
-
-  // 話題を表示
-  topicResult.textContent =
-    selectedTopic.question;
-
-}
-
-
-// =====================
-// さらに深く聞く
-// =====================
-
-function showDeepQuestion() {
-
-  // まだ話題が選ばれていない場合
-  if (!currentTopic) {
-
-    alert(
-      '先にサイコロを振ってください'
-    );
-
-    return;
-  }
-
-
-  // 深掘り質問を表示
-  topicResult.textContent =
-    `🔥 ${currentTopic.deep}`;
-
-}
-
-
-// =====================
-// 盛り上がった話題に追加
-// =====================
-
-function addFavoriteTopic() {
-
-  // 話題が選ばれていない場合
-  if (!currentTopic) {
-
-    alert(
-      '先にサイコロを振ってください'
-    );
-
-    return;
-  }
-
-
-  // まだ保存されていない場合
-  if (
-    !favoriteTopics.includes(
-      currentTopic.question
-    )
-  ) {
-
-    favoriteTopics.push(
-      currentTopic.question
-    );
-
-    favoriteButton.textContent =
-      '⭐ 保存しました！';
-
-  } else {
-
-    favoriteButton.textContent =
-      '⭐ すでに保存済み！';
-
-  }
 
 }
 
@@ -885,88 +990,38 @@ function addFavoriteTopic() {
 
 function nextTopic() {
 
-  // 現在の設定のまま
-  // もう一度サイコロを振る
   rollDice();
 
 }
 
 
 // =====================
-// イベント
+// ボタンイベント
 // =====================
 
-
-// メンバー追加
-addMemberButton.addEventListener(
-  'click',
-  addMember
-);
-
-
-// Enterキーでも追加
-memberNameInput.addEventListener(
-  'keydown',
-  (event) => {
-
-    if (event.key === 'Enter') {
-
-      addMember();
-
-    }
-
-  }
-);
-
-
-// ゲーム開始
-memberNextButton.addEventListener(
-  'click',
-  startGame
-);
-
-
-// メンバー編集に戻る
-backToMemberButton.addEventListener(
-  'click',
-  goToMemberScreen
-);
-
-
-// 回答者モード変更
-memberModeInputs.forEach((input) => {
-
-  input.addEventListener(
-    'change',
-    changeMemberMode
-  );
-
-});
-
-
-// サイコロ
 rollButton.addEventListener(
   'click',
   rollDice
 );
 
 
-// 深掘り
-deepButton.addEventListener(
-  'click',
-  showDeepQuestion
-);
-
-
-// 盛り上がった
-favoriteButton.addEventListener(
-  'click',
-  addFavoriteTopic
-);
-
-
-// 次の話題
 nextTopicButton.addEventListener(
   'click',
   nextTopic
 );
+
+
+// =====================
+// 初期処理
+// =====================
+
+// JSON読み込み中は
+// サイコロを押せないようにする
+
+rollButton.disabled =
+  true;
+
+
+// data.jsonを読み込む
+
+loadGameData();
