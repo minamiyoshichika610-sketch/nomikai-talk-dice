@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>飲み会トークダイス</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="container">
+
+
+    <!-- =====================
+         画面1：メンバー登録
+    ====================== -->
+
+    <section id="member-screen" class="screen">
+
+      <h1>🍻 飲み会トークダイス</h1>
+
+      <p class="description">
+        まずは今日の参加メンバーを登録しよう！
+      </p>
+
+
+      <!-- 名前入力 -->
+
+      <div class="member-input-area">
+
+        <input
+          type="text"
+          id="member-name"
+          placeholder="名前を入力"
+        >
+
+        <button id="add-member-button">
+          ＋ 追加
+        </button>
+
+      </div>
+
+
+      <!-- 追加したメンバー -->
+
+      <div
+        id="member-list"
+        class="member-list"
+      >
+
+      </div>
+
+
+      <!-- 次へ -->
+
+      <button
+        id="member-next-button"
+        class="main-button"
+      >
+        🎲 ゲームを始める
+      </button>
+
+    </section>
+
+
+
+    <!-- =====================
+         画面2：ゲーム画面
+    ====================== -->
+
+    <section
+      id="game-screen"
+      class="screen hidden"
+    >
+
+      <h1>🍻 飲み会トークダイス</h1>
+
+
+      <p class="description">
+        ジャンルと回答者を決めてサイコロを振ろう！
+      </p>
+
+
+
+      <!-- =====================
+           ジャンル選択
+      ====================== -->
+
+      <section class="setting-section">
+
+        <h2 class="setting-title">
+          🎯 ジャンルを選択
+        </h2>
+
+
+        <div class="genre-list">
+
+          <label>
+            <input
+              type="checkbox"
+              value="😂 面白い"
+              checked
+            >
+
+            😂 面白い
+          </label>
+
+
+          <label>
+            <input
+              type="checkbox"
+              value="❤️ 恋愛"
+              checked
+            >
+
+            ❤️ 恋愛
+          </label>
+
+
+          <label>
+            <input
+              type="checkbox"
+              value="💀 黒歴史"
+              checked
+            >
+
+            💀 黒歴史
+          </label>
+
+
+          <label>
+            <input
+              type="checkbox"
+              value="🤔 深い話"
+              checked
+            >
+
+            🤔 深い話
+          </label>
+
+
+          <label>
+            <input
+              type="checkbox"
+              value="🔥 暴露"
+              checked
+            >
+
+            🔥 暴露
+          </label>
+
+
+          <label>
+            <input
+              type="checkbox"
+              value="⚔️ 究極の選択"
+              checked
+            >
+
+            ⚔️ 究極の選択
+          </label>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================
+           回答者の決め方
+      ====================== -->
+
+      <section class="setting-section member-setting">
+
+        <h2 class="setting-title">
+          👤 回答者を決める
+        </h2>
+
+
+        <div class="member-mode-list">
+
+
+          <!-- ランダム -->
+
+          <label class="member-mode">
+
+            <input
+              type="radio"
+              name="member-mode"
+              value="random"
+              checked
+            >
+
+            🎲 サイコロで決める
+
+          </label>
+
+
+
+          <!-- 自分で選ぶ -->
+
+          <label class="member-mode">
+
+            <input
+              type="radio"
+              name="member-mode"
+              value="select"
+            >
+
+            👤 自分で選ぶ
+
+          </label>
+
+        </div>
+
+
+        <!-- 自分で選ぶ場合のプルダウン -->
+
+        <select
+          id="member-select"
+          disabled
+        >
+
+          <option value="">
+            回答者を選択してください
+          </option>
+
+        </select>
+
+      </section>
+
+
+
+      <!-- =====================
+           サイコロ
+      ====================== -->
+
+      <div id="dice">
+        🎲
+      </div>
+
+
+      <button
+        id="roll-button"
+        class="main-button"
+      >
+        🎲 サイコロを振る
+      </button>
+
+
+
+      <!-- =====================
+           結果
+      ====================== -->
+
+      <section class="result-area">
+
+
+        <!-- ジャンル -->
+
+        <div class="game-block">
+
+          <p class="game-label">
+            🎯 今回のジャンル
+          </p>
+
+          <h2 id="genre-result">
+            ？
+          </h2>
+
+        </div>
+
+
+
+        <!-- 回答者 -->
+
+        <div class="game-block">
+
+          <p class="game-label">
+            👤 今回の回答者
+          </p>
+
+          <h2 id="member-result">
+            ？
+          </h2>
+
+        </div>
+
+
+
+        <!-- 話題 -->
+
+        <div class="topic-block">
+
+          <p class="game-label">
+            💬 今回のお題
+          </p>
+
+          <h2 id="topic-result">
+            🎲 サイコロを振ってスタート！
+          </h2>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================
+           ゲーム操作
+      ====================== -->
+
+      <div class="game-actions">
+
+        <button id="deep-button">
+          🔥 さらに深く聞く
+        </button>
+
+        <button id="favorite-button">
+          ⭐ 盛り上がった！
+        </button>
+
+        <button id="next-topic-button">
+          ➡ 次の話題
+        </button>
+
+      </div>
+
+
+      <!-- メンバー編集に戻る -->
+
+      <button
+        id="back-to-member-button"
+        class="sub-button"
+      >
+        ← メンバーを編集
+      </button>
+
+    </section>
+
+  </main>
+
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
