@@ -1,356 +1,1027 @@
-<!DOCTYPE html>
-<html lang="ja">
+// =====================
+// 要素取得
+// =====================
 
-<head>
-  <meta charset="UTF-8">
+const memberScreen =
+  document.getElementById('member-screen');
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+const gameScreen =
+  document.getElementById('game-screen');
 
-  <title>飲み会トークダイス</title>
+const memberNameInput =
+  document.getElementById('member-name');
 
-  <link rel="stylesheet" href="style.css">
-</head>
+const addMemberButton =
+  document.getElementById('add-member-button');
 
-<body>
+const memberList =
+  document.getElementById('member-list');
 
-  <main class="container">
+const memberNextButton =
+  document.getElementById('member-next-button');
 
+const memberSelect =
+  document.getElementById('member-select');
 
-    <!-- =====================
-         画面1：メンバー登録
-    ====================== -->
+const rollButton =
+  document.getElementById('roll-button');
 
-    <section id="member-screen" class="screen">
+const dice =
+  document.getElementById('dice');
 
-      <h1>🍻 飲み会トークダイス</h1>
+const genreResult =
+  document.getElementById('genre-result');
 
-      <p class="description">
-        まずは今日の参加メンバーを登録しよう！
-      </p>
+const memberResult =
+  document.getElementById('member-result');
 
+const topicResult =
+  document.getElementById('topic-result');
 
-      <!-- 名前入力 -->
+const nextTopicButton =
+  document.getElementById('next-topic-button');
 
-      <div class="member-input-area">
+const backToMemberButton =
+  document.getElementById('back-to-member-button');
 
-        <input
-          type="text"
-          id="member-name"
-          placeholder="名前を入力"
-        >
 
-        <button id="add-member-button">
-          ＋ 追加
-        </button>
+// =====================
+// 特殊要素
+// =====================
 
-      </div>
+const missionBlock =
+  document.getElementById('mission-block');
 
+const missionResult =
+  document.getElementById('mission-result');
 
-      <!-- 追加したメンバー -->
+const eventBlock =
+  document.getElementById('event-block');
 
-      <div
-        id="member-list"
-        class="member-list"
-      >
+const eventResult =
+  document.getElementById('event-result');
 
-      </div>
+const specialModeBlock =
+  document.getElementById('special-mode-block');
 
+const specialModeResult =
+  document.getElementById('special-mode-result');
 
-      <!-- 次へ -->
 
-      <button
-        id="member-next-button"
-        class="main-button"
-      >
-        🎲 ゲームを始める
-      </button>
+// =====================
+// メンバー情報
+// =====================
 
-    </section>
+const members = [];
 
 
+// =====================
+// 現在の話題情報
+// =====================
 
-    <!-- =====================
-         画面2：ゲーム画面
-    ====================== -->
+let currentGenre = '';
+let currentTopic = '';
+let currentMember = '';
 
-    <section
-      id="game-screen"
-      class="screen hidden"
-    >
 
-      <h1>🍻 飲み会トークダイス</h1>
+// =====================
+// JSONデータ
+// =====================
 
+let gameData = null;
 
-      <p class="description">
-        ジャンルと回答者を決めてサイコロを振ろう！
-      </p>
 
+// =====================
+// ジャンルごとのサイコロ
+// =====================
 
+const diceStyles = {
 
-      <!-- =====================
-           ジャンル選択
-      ====================== -->
+  '😂 面白い': '😂',
 
-      <section class="setting-section">
+  '❤️ 恋愛': '❤️',
 
-        <h2 class="setting-title">
-          🎯 ジャンルを選択
-        </h2>
+  '💀 黒歴史': '💀',
 
+  '🤔 深い話': '🤔',
 
-        <div class="genre-list">
+  '🔥 暴露': '🔥',
 
-          <label>
-            <input
-              type="checkbox"
-              value="😂 面白い"
-              checked
-            >
+  '⚔️ 究極の選択': '⚔️'
 
-            😂 面白い
-          </label>
+};
 
 
-          <label>
-            <input
-              type="checkbox"
-              value="❤️ 恋愛"
-              checked
-            >
+// =====================
+// data.jsonを読み込む
+// =====================
 
-            ❤️ 恋愛
-          </label>
+async function loadGameData() {
 
+  try {
 
-          <label>
-            <input
-              type="checkbox"
-              value="💀 黒歴史"
-              checked
-            >
+    const response =
+      await fetch('./data.json');
 
-            💀 黒歴史
-          </label>
 
+    if (!response.ok) {
 
-          <label>
-            <input
-              type="checkbox"
-              value="🤔 深い話"
-              checked
-            >
+      throw new Error(
+        'data.jsonの読み込みに失敗しました'
+      );
 
-            🤔 深い話
-          </label>
+    }
 
 
-          <label>
-            <input
-              type="checkbox"
-              value="🔥 暴露"
-              checked
-            >
+    gameData =
+      await response.json();
 
-            🔥 暴露
-          </label>
 
+    console.log(
+      'data.jsonの読み込みに成功しました'
+    );
 
-          <label>
-            <input
-              type="checkbox"
-              value="⚔️ 究極の選択"
-              checked
-            >
 
-            ⚔️ 究極の選択
-          </label>
+    rollButton.disabled = false;
 
-        </div>
+  } catch (error) {
 
-      </section>
+    console.error(error);
 
 
+    alert(
+      'ゲームデータの読み込みに失敗しました。\n' +
+      'data.jsonが同じフォルダにあるか確認してください。'
+    );
 
-      <!-- =====================
-           回答者の決め方
-      ====================== -->
 
-      <section class="setting-section member-setting">
+    rollButton.disabled = true;
 
-        <h2 class="setting-title">
-          👤 回答者を決める
-        </h2>
+  }
 
+}
 
-        <div class="member-mode-list">
 
+// =====================
+// メンバー追加
+// =====================
 
-          <!-- ランダム -->
+function addMember() {
 
-          <label class="member-mode">
+  const name =
+    memberNameInput.value.trim();
 
-            <input
-              type="radio"
-              name="member-mode"
-              value="random"
-              checked
-            >
 
-            🎲 サイコロで決める
+  if (name === '') {
 
-          </label>
+    memberNameInput.focus();
 
+    return;
 
+  }
 
-          <!-- 自分で選ぶ -->
 
-          <label class="member-mode">
+  if (members.includes(name)) {
 
-            <input
-              type="radio"
-              name="member-mode"
-              value="select"
-            >
+    alert(
+      '同じ名前がすでに登録されています'
+    );
 
-            👤 自分で選ぶ
+    return;
 
-          </label>
+  }
 
-        </div>
 
+  members.push(name);
 
-        <!-- 自分で選ぶ場合のプルダウン -->
 
-        <select
-          id="member-select"
-          disabled
-        >
+  memberNameInput.value = '';
 
-          <option value="">
-            回答者を選択してください
-          </option>
 
-        </select>
+  renderMembers();
 
-      </section>
 
+  memberNameInput.focus();
 
+}
 
-      <!-- =====================
-           サイコロ
-      ====================== -->
 
-      <div id="dice">
-        🎲
-      </div>
+// =====================
+// メンバー一覧表示
+// =====================
 
+function renderMembers() {
 
-      <button
-        id="roll-button"
-        class="main-button"
-      >
-        🎲 サイコロを振る
-      </button>
+  memberList.innerHTML = '';
 
 
+  memberSelect.innerHTML =
+    '<option value="">回答者を選択してください</option>';
 
-      <!-- =====================
-           結果
-      ====================== -->
 
-      <section class="result-area">
+  members.forEach(
+    (member, index) => {
 
+      // =====================
+      // メンバー表示
+      // =====================
 
-        <!-- ジャンル -->
+      const memberItem =
+        document.createElement('div');
 
-        <div class="game-block">
 
-          <p class="game-label">
-            🎯 今回のジャンル
-          </p>
+      memberItem.classList.add(
+        'member-item'
+      );
 
-          <h2 id="genre-result">
-            ？
-          </h2>
 
-        </div>
+      const nameElement =
+        document.createElement('span');
 
 
+      nameElement.textContent =
+        member;
 
-        <!-- 回答者 -->
 
-        <div class="game-block">
+      // =====================
+      // 削除ボタン
+      // =====================
 
-          <p class="game-label">
-            👤 今回の回答者
-          </p>
+      const deleteButton =
+        document.createElement('button');
 
-          <h2 id="member-result">
-            ？
-          </h2>
 
-        </div>
+      deleteButton.textContent =
+        '削除';
 
 
+      deleteButton.classList.add(
+        'delete-member-button'
+      );
 
-        <!-- 話題 -->
 
-        <div class="topic-block">
+      deleteButton.addEventListener(
+        'click',
+        () => {
 
-          <p class="game-label">
-            💬 今回のお題
-          </p>
+          members.splice(
+            index,
+            1
+          );
 
-          <h2 id="topic-result">
-            🎲 サイコロを振ってスタート！
-          </h2>
 
-        </div>
+          renderMembers();
 
-      </section>
+        }
+      );
 
 
+      memberItem.appendChild(
+        nameElement
+      );
 
-      <!-- =====================
-           ゲーム操作
-      ====================== -->
 
-      <div class="game-actions">
+      memberItem.appendChild(
+        deleteButton
+      );
 
-        <button id="deep-button">
-          🔥 さらに深く聞く
-        </button>
 
-        <button id="favorite-button">
-          ⭐ 盛り上がった！
-        </button>
+      memberList.appendChild(
+        memberItem
+      );
 
-        <button id="next-topic-button">
-          ➡ 次の話題
-        </button>
 
-      </div>
+      // =====================
+      // 回答者選択
+      // =====================
 
+      const option =
+        document.createElement('option');
 
-      <!-- メンバー編集に戻る -->
 
-      <button
-        id="back-to-member-button"
-        class="sub-button"
-      >
-        ← メンバーを編集
-      </button>
+      option.value =
+        member;
 
-    </section>
 
-  </main>
+      option.textContent =
+        member;
 
 
-  <script src="script.js"></script>
+      memberSelect.appendChild(
+        option
+      );
 
-</body>
+    }
+  );
 
-</html>
+}
+
+
+// =====================
+// Enterキーでメンバー追加
+// =====================
+
+memberNameInput.addEventListener(
+  'keydown',
+  (event) => {
+
+    if (event.key === 'Enter') {
+
+      addMember();
+
+    }
+
+  }
+);
+
+
+// =====================
+// 追加ボタン
+// =====================
+
+addMemberButton.addEventListener(
+  'click',
+  addMember
+);
+
+
+// =====================
+// ゲーム開始
+// =====================
+
+memberNextButton.addEventListener(
+  'click',
+  () => {
+
+    if (members.length === 0) {
+
+      alert(
+        '参加メンバーを1人以上追加してください'
+      );
+
+      return;
+
+    }
+
+
+    if (gameData === null) {
+
+      alert(
+        'ゲームデータを読み込んでいます。\n少し待ってからもう一度押してください。'
+      );
+
+      return;
+
+    }
+
+
+    memberScreen.classList.add(
+      'hidden'
+    );
+
+
+    gameScreen.classList.remove(
+      'hidden'
+    );
+
+  }
+);
+
+
+// =====================
+// メンバー編集に戻る
+// =====================
+
+backToMemberButton.addEventListener(
+  'click',
+  () => {
+
+    gameScreen.classList.add(
+      'hidden'
+    );
+
+
+    memberScreen.classList.remove(
+      'hidden'
+    );
+
+  }
+);
+
+
+// =====================
+// 回答者モード切り替え
+// =====================
+
+const memberModes =
+  document.querySelectorAll(
+    'input[name="member-mode"]'
+  );
+
+
+memberModes.forEach(
+  (mode) => {
+
+    mode.addEventListener(
+      'change',
+      () => {
+
+        if (mode.value === 'select') {
+
+          memberSelect.disabled =
+            false;
+
+        } else {
+
+          memberSelect.disabled =
+            true;
+
+        }
+
+      }
+    );
+
+  }
+);
+
+
+// =====================
+// ランダムな要素を取得
+// =====================
+
+function getRandomItem(array) {
+
+  if (!array || array.length === 0) {
+
+    return '';
+
+  }
+
+
+  const randomIndex =
+    Math.floor(
+      Math.random() * array.length
+    );
+
+
+  return array[randomIndex];
+
+}
+
+
+// =====================
+// 選択されたジャンルを取得
+// =====================
+
+function getSelectedGenres() {
+
+  const checkedGenres =
+    document.querySelectorAll(
+      '.genre-list input:checked'
+    );
+
+
+  const genres = [];
+
+
+  checkedGenres.forEach(
+    (genre) => {
+
+      genres.push(
+        genre.value
+      );
+
+    }
+  );
+
+
+  return genres;
+
+}
+
+
+// =====================
+// 回答者を決定
+// =====================
+
+function getSelectedMember() {
+
+  const selectedMode =
+    document.querySelector(
+      'input[name="member-mode"]:checked'
+    ).value;
+
+
+  // =====================
+  // 自分で選ぶ
+  // =====================
+
+  if (selectedMode === 'select') {
+
+    if (memberSelect.value === '') {
+
+      return null;
+
+    }
+
+
+    return memberSelect.value;
+
+  }
+
+
+  // =====================
+  // ランダム
+  // =====================
+
+  return getRandomItem(
+    members
+  );
+
+}
+
+
+// =====================
+// 特殊要素をすべて非表示
+// =====================
+
+function hideSpecialBlocks() {
+
+  missionBlock.classList.add(
+    'hidden'
+  );
+
+
+  eventBlock.classList.add(
+    'hidden'
+  );
+
+
+  specialModeBlock.classList.add(
+    'hidden'
+  );
+
+}
+
+
+// =====================
+// 特殊モード判定
+// =====================
+//
+// 通常       約75%
+// ミッション 約10%
+// イベント   約10%
+// スペシャル 約5%
+//
+// 合計100%
+// =====================
+
+function getRandomMode() {
+
+  const random =
+    Math.random();
+
+
+  // =====================
+  // 約75%：通常
+  // =====================
+
+  if (random < 0.75) {
+
+    return 'normal';
+
+  }
+
+
+  // =====================
+  // 約10%：ミッション
+  // =====================
+
+  if (random < 0.85) {
+
+    return 'mission';
+
+  }
+
+
+  // =====================
+  // 約10%：特殊イベント
+  // =====================
+
+  if (random < 0.95) {
+
+    return 'event';
+
+  }
+
+
+  // =====================
+  // 約5%：スペシャル
+  // =====================
+
+  return 'special';
+
+}
+
+
+// =====================
+// 特殊要素を表示
+// =====================
+
+function showSpecialMode(mode) {
+
+  // =====================
+  // ミッション
+  // =====================
+
+  if (mode === 'mission') {
+
+    const mission =
+      getRandomItem(
+        gameData.missions
+      );
+
+
+    missionResult.textContent =
+      mission;
+
+
+    missionBlock.classList.remove(
+      'hidden'
+    );
+
+  }
+
+
+  // =====================
+  // 特殊イベント
+  // =====================
+
+  if (mode === 'event') {
+
+    const event =
+      getRandomItem(
+        gameData.specialEvents
+      );
+
+
+    eventResult.innerHTML =
+      `
+      ${event.title}
+      <br>
+      ${event.description}
+      `;
+
+
+    eventBlock.classList.remove(
+      'hidden'
+    );
+
+  }
+
+
+  // =====================
+  // スペシャルモード
+  // =====================
+
+  if (mode === 'special') {
+
+    const special =
+      getRandomItem(
+        gameData.specialModes
+      );
+
+
+    specialModeResult.innerHTML =
+      `
+      ${special.title}
+      <br>
+      ${special.description}
+      `;
+
+
+    specialModeBlock.classList.remove(
+      'hidden'
+    );
+
+  }
+
+}
+
+
+// =====================
+// サイコロを振る
+// =====================
+
+function rollDice() {
+
+  // =====================
+  // JSON読み込み確認
+  // =====================
+
+  if (gameData === null) {
+
+    alert(
+      'ゲームデータを読み込んでいます。\n少し待ってください。'
+    );
+
+    return;
+
+  }
+
+
+  // =====================
+  // ジャンル確認
+  // =====================
+
+  const genres =
+    getSelectedGenres();
+
+
+  if (genres.length === 0) {
+
+    alert(
+      'ジャンルを1つ以上選択してください'
+    );
+
+    return;
+
+  }
+
+
+  // =====================
+  // 回答者確認
+  // =====================
+
+  const selectedMember =
+    getSelectedMember();
+
+
+  if (selectedMember === null) {
+
+    alert(
+      '回答者を選択してください'
+    );
+
+    return;
+
+  }
+
+
+  // =====================
+  // ボタン連打防止
+  // =====================
+
+  rollButton.disabled =
+    true;
+
+
+  nextTopicButton.disabled =
+    true;
+
+
+  // =====================
+  // 前回の特殊表示を消す
+  // =====================
+
+  hideSpecialBlocks();
+
+
+  // =====================
+  // 表示を初期化
+  // =====================
+
+  genreResult.textContent =
+    '🎲';
+
+
+  memberResult.textContent =
+    '🎲';
+
+
+  topicResult.textContent =
+    'サイコロを振っています...';
+
+
+  // =====================
+  // サイコロ初期化
+  // =====================
+
+  dice.textContent =
+    '🎲';
+
+
+  dice.classList.remove(
+    'rolling'
+  );
+
+
+  // アニメーションを強制的に再スタート
+
+  void dice.offsetWidth;
+
+
+  dice.classList.add(
+    'rolling'
+  );
+
+
+  // =====================
+  // アニメーション中
+  // =====================
+
+  const intervalId =
+    setInterval(
+      () => {
+
+        const randomGenre =
+          getRandomItem(
+            genres
+          );
+
+
+        genreResult.textContent =
+          randomGenre;
+
+
+        memberResult.textContent =
+          getRandomItem(
+            members
+          );
+
+
+        dice.textContent =
+          diceStyles[randomGenre];
+
+      },
+      100
+    );
+
+
+  // =====================
+  // 1秒後に結果決定
+  // =====================
+
+  setTimeout(
+    () => {
+
+      clearInterval(
+        intervalId
+      );
+
+
+      // =====================
+      // 最終ジャンル
+      // =====================
+
+      currentGenre =
+        getRandomItem(
+          genres
+        );
+
+
+      // =====================
+      // 最終回答者
+      // =====================
+
+      currentMember =
+        selectedMember;
+
+
+      // =====================
+      // お題取得
+      // =====================
+
+      const genreTopics =
+        gameData.topics[
+          currentGenre
+        ];
+
+
+      if (
+        !genreTopics ||
+        genreTopics.length === 0
+      ) {
+
+        currentTopic =
+          'このジャンルのお題がありません。';
+
+      } else {
+
+        currentTopic =
+          getRandomItem(
+            genreTopics
+          );
+
+      }
+
+
+      // =====================
+      // 結果表示
+      // =====================
+
+      genreResult.textContent =
+        currentGenre;
+
+
+      memberResult.textContent =
+        currentMember;
+
+
+      topicResult.textContent =
+        currentTopic;
+
+
+      // =====================
+      // ジャンル別サイコロ
+      // =====================
+
+      dice.textContent =
+        diceStyles[currentGenre];
+
+
+      // =====================
+      // 特殊要素判定
+      // =====================
+
+      const mode =
+        getRandomMode();
+
+
+      // =====================
+      // 特殊要素表示
+      // =====================
+
+      showSpecialMode(
+        mode
+      );
+
+
+      // =====================
+      // アニメーション終了
+      // =====================
+
+      dice.classList.remove(
+        'rolling'
+      );
+
+
+      // =====================
+      // ボタン復活
+      // =====================
+
+      rollButton.disabled =
+        false;
+
+
+      nextTopicButton.disabled =
+        false;
+
+    },
+    1000
+  );
+
+}
+
+
+// =====================
+// 次の話題
+// =====================
+
+function nextTopic() {
+
+  rollDice();
+
+}
+
+
+// =====================
+// ボタンイベント
+// =====================
+
+rollButton.addEventListener(
+  'click',
+  rollDice
+);
+
+
+nextTopicButton.addEventListener(
+  'click',
+  nextTopic
+);
+
+
+// =====================
+// 初期処理
+// =====================
+
+// JSON読み込み中は
+// サイコロを押せないようにする
+
+rollButton.disabled =
+  true;
+
+
+// data.jsonを読み込む
+
+loadGameData();
