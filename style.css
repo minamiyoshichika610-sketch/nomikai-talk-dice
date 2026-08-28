@@ -2,6 +2,11 @@
   box-sizing: border-box;
 }
 
+
+/* =====================
+   全体
+===================== */
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -12,9 +17,18 @@ body {
 
   padding: 20px 0;
 
-  font-family: Arial, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  font-family:
+    Arial,
+    "Hiragino Kaku Gothic ProN",
+    Meiryo,
+    sans-serif;
 
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background:
+    linear-gradient(
+      135deg,
+      #667eea,
+      #764ba2
+    );
 }
 
 
@@ -33,7 +47,9 @@ body {
 
   border-radius: 20px;
 
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 15px 40px
+    rgba(0, 0, 0, 0.2);
 }
 
 
@@ -138,6 +154,10 @@ h1 {
   background: #e74c3c;
 }
 
+.delete-member-button:hover {
+  background: #c0392b;
+}
+
 
 /* =====================
    設定エリア
@@ -167,7 +187,8 @@ h1 {
 .genre-list {
   display: grid;
 
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns:
+    repeat(3, 1fr);
 
   gap: 7px;
 
@@ -301,7 +322,9 @@ button {
 
   cursor: pointer;
 
-  transition: 0.2s;
+  transition:
+    transform 0.2s,
+    background 0.2s;
 }
 
 button:hover {
@@ -346,40 +369,102 @@ button:disabled {
 ===================== */
 
 #dice {
-  font-size: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 82px;
+  height: 82px;
+
+  margin:
+    20px auto 8px;
+
+  font-size: 55px;
 
   line-height: 1;
 
-  margin: 18px 0 8px;
+  background: #f5f5f5;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 6px 15px
+    rgba(0, 0, 0, 0.12);
+
+  transition:
+    transform 0.3s,
+    background 0.3s;
 }
 
 
-/* サイコロ回転 */
+/* =====================
+   ジャンル別サイコロ
+===================== */
+
+.dice-funny {
+  background: #fff3b0;
+}
+
+.dice-love {
+  background: #ffd6e7;
+}
+
+.dice-black-history {
+  background: #e5e5e5;
+}
+
+.dice-deep {
+  background: #dce8ff;
+}
+
+.dice-expose {
+  background: #ffd6cc;
+}
+
+.dice-choice {
+  background: #e6dcff;
+}
+
+
+/* =====================
+   サイコロ回転
+===================== */
 
 .rolling {
-  animation: roll 1s linear;
+  animation:
+    roll 1s linear;
 }
 
 @keyframes roll {
 
   0% {
-    transform: rotate(0deg) scale(1);
+    transform:
+      rotate(0deg)
+      scale(1);
   }
 
   25% {
-    transform: rotate(180deg) scale(1.15);
+    transform:
+      rotate(180deg)
+      scale(1.15);
   }
 
   50% {
-    transform: rotate(360deg) scale(0.9);
+    transform:
+      rotate(360deg)
+      scale(0.9);
   }
 
   75% {
-    transform: rotate(540deg) scale(1.15);
+    transform:
+      rotate(540deg)
+      scale(1.15);
   }
 
   100% {
-    transform: rotate(720deg) scale(1);
+    transform:
+      rotate(720deg)
+      scale(1);
   }
 
 }
@@ -394,15 +479,50 @@ button:disabled {
 }
 
 .game-block,
-.topic-block {
+.topic-block,
+.special-block {
   margin-top: 10px;
 
   padding: 12px;
 
-  background: #f7f7f7;
-
   border-radius: 12px;
 }
+
+
+/* 通常の結果 */
+
+.game-block {
+  background: #f7f7f7;
+}
+
+
+/* お題 */
+
+.topic-block {
+  background: #f0f1ff;
+}
+
+
+/* ランダムミッション */
+
+#mission-block {
+  background: #fff8d9;
+}
+
+
+/* 特殊イベント */
+
+#event-block {
+  background: #ffe3e3;
+}
+
+
+/* スペシャルモード */
+
+#special-mode-block {
+  background: #eadcff;
+}
+
 
 .game-label {
   margin: 0 0 5px;
@@ -413,23 +533,20 @@ button:disabled {
 }
 
 .game-block h2,
-.topic-block h2 {
+.topic-block h2,
+.special-block h2 {
   margin: 0;
 
   font-size: 20px;
+
+  line-height: 1.5;
 }
 
 
-/* お題を目立たせる */
-
-.topic-block {
-  background: #f0f1ff;
-}
+/* お題 */
 
 .topic-block h2 {
   font-size: 19px;
-
-  line-height: 1.5;
 }
 
 
@@ -438,21 +555,17 @@ button:disabled {
 ===================== */
 
 .game-actions {
-  display: grid;
+  display: flex;
 
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 7px;
+  justify-content: center;
 
   margin-top: 16px;
 }
 
 .game-actions button {
-  min-height: 48px;
+  min-width: 160px;
 
-  padding: 8px 5px;
-
-  font-size: 12px;
+  min-height: 52px;
 }
 
 
@@ -466,6 +579,7 @@ button:disabled {
     padding: 10px 0;
   }
 
+
   .container {
     width: 94%;
 
@@ -474,19 +588,22 @@ button:disabled {
     border-radius: 18px;
   }
 
+
   h1 {
     font-size: 24px;
   }
+
 
   .description {
     font-size: 13px;
   }
 
 
-  /* ジャンルを2列に */
+  /* ジャンルを2列 */
 
   .genre-list {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+      repeat(2, 1fr);
   }
 
 
@@ -499,19 +616,33 @@ button:disabled {
   }
 
 
-  /* 操作ボタン */
-
-  .game-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .game-actions button {
-    font-size: 14px;
-  }
-
+  /* サイコロ */
 
   #dice {
-    font-size: 58px;
+    width: 72px;
+    height: 72px;
+
+    font-size: 48px;
+  }
+
+
+  /* 結果 */
+
+  .game-block h2,
+  .topic-block h2,
+  .special-block h2 {
+    font-size: 17px;
+  }
+
+
+  /* 次の話題ボタン */
+
+  .game-actions button {
+    width: 100%;
+
+    min-height: 48px;
+
+    font-size: 14px;
   }
 
 }
