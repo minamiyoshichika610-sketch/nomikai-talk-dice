@@ -61,12 +61,6 @@ const eventBlock =
 const eventResult =
   document.getElementById('event-result');
 
-const specialModeBlock =
-  document.getElementById('special-mode-block');
-
-const specialModeResult =
-  document.getElementById('special-mode-result');
-
 
 // =====================
 // メンバー情報
@@ -105,9 +99,7 @@ const diceStyles = {
 
   '🤔 深い話': '🤔',
 
-  '🔥 暴露': '🔥',
-
-  '⚔️ 究極の選択': '⚔️'
+  '🔥 暴露': '🔥'
 
 };
 
@@ -142,7 +134,11 @@ async function loadGameData() {
     );
 
 
+    // JSON読み込み完了後
+    // サイコロを使用可能にする
+
     rollButton.disabled = false;
+
 
   } catch (error) {
 
@@ -367,7 +363,8 @@ memberNextButton.addEventListener(
     if (gameData === null) {
 
       alert(
-        'ゲームデータを読み込んでいます。\n少し待ってからもう一度押してください。'
+        'ゲームデータを読み込んでいます。\n' +
+        '少し待ってからもう一度押してください。'
       );
 
       return;
@@ -556,22 +553,16 @@ function hideSpecialBlocks() {
     'hidden'
   );
 
-
-  specialModeBlock.classList.add(
-    'hidden'
-  );
-
 }
 
 
 // =====================
-// 特殊モード判定
+// 特殊要素判定
 // =====================
 //
-// 通常       約75%
+// 通常       約80%
 // ミッション 約10%
 // イベント   約10%
-// スペシャル 約5%
 //
 // 合計100%
 // =====================
@@ -583,10 +574,10 @@ function getRandomMode() {
 
 
   // =====================
-  // 約75%：通常
+  // 約80%：通常
   // =====================
 
-  if (random < 0.75) {
+  if (random < 0.80) {
 
     return 'normal';
 
@@ -597,7 +588,7 @@ function getRandomMode() {
   // 約10%：ミッション
   // =====================
 
-  if (random < 0.85) {
+  if (random < 0.90) {
 
     return 'mission';
 
@@ -605,21 +596,10 @@ function getRandomMode() {
 
 
   // =====================
-  // 約10%：特殊イベント
+  // 約10%：イベント
   // =====================
 
-  if (random < 0.95) {
-
-    return 'event';
-
-  }
-
-
-  // =====================
-  // 約5%：スペシャル
-  // =====================
-
-  return 'special';
+  return 'event';
 
 }
 
@@ -679,33 +659,6 @@ function showSpecialMode(mode) {
 
   }
 
-
-  // =====================
-  // スペシャルモード
-  // =====================
-
-  if (mode === 'special') {
-
-    const special =
-      getRandomItem(
-        gameData.specialModes
-      );
-
-
-    specialModeResult.innerHTML =
-      `
-      ${special.title}
-      <br>
-      ${special.description}
-      `;
-
-
-    specialModeBlock.classList.remove(
-      'hidden'
-    );
-
-  }
-
 }
 
 
@@ -722,7 +675,8 @@ function rollDice() {
   if (gameData === null) {
 
     alert(
-      'ゲームデータを読み込んでいます。\n少し待ってください。'
+      'ゲームデータを読み込んでいます。\n' +
+      '少し待ってください。'
     );
 
     return;
