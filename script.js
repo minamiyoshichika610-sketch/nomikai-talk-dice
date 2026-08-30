@@ -560,9 +560,9 @@ function hideSpecialBlocks() {
 // 特殊要素判定
 // =====================
 //
-// 通常       約55%
-// ミッション 約15%
-// イベント   約30%
+// 通常       55%
+// ミッション 15%
+// イベント   30%
 //
 // 合計100%
 // =====================
@@ -573,16 +573,10 @@ function getRandomMode() {
     Math.random();
 
 
-// =====================
-// 特殊イベント判定
-// =====================
-
-function getRandomMode() {
-
-  const random = Math.random();
-
-
+  // =====================
   // 55%：通常
+  // =====================
+
   if (random < 0.55) {
 
     return 'normal';
@@ -590,7 +584,10 @@ function getRandomMode() {
   }
 
 
+  // =====================
   // 15%：ミッション
+  // =====================
+
   if (random < 0.70) {
 
     return 'mission';
@@ -598,10 +595,12 @@ function getRandomMode() {
   }
 
 
+  // =====================
   // 30%：特殊イベント
+  // =====================
+
   return 'event';
 
-}
 }
 
 
@@ -646,12 +645,12 @@ function showSpecialMode(mode) {
       );
 
 
-    eventResult.innerHTML =
-      `
-      ${event.title}
-      <br>
-      ${event.description}
-      `;
+    eventResult.textContent =
+      `${event.title}\n${event.description}`;
+
+
+    eventResult.style.whiteSpace =
+      'pre-line';
 
 
     eventBlock.classList.remove(
@@ -892,7 +891,7 @@ function rollDice() {
       // =====================
 
       dice.textContent =
-        diceStyles[currentGenre];
+        diceStyles[currentGenre] || '🎲';
 
 
       // =====================
